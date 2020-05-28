@@ -4,4 +4,4 @@ Nodejs with REST API for social media portal with mongodb
 
 # Libraries List
 
-npm i express body-parser bcryptjs validator
+npm i express body-parser bcryptjs validator jsonwebtoken gravatar
