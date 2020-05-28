@@ -2,10 +2,12 @@ const Validator = require('validator');
 const isEmpty = require('./is-empty');
 
 module.exports = getValidateRegister = (data) => {
+  console.log('Validate', data);
   let errors = {};
   data.name = !isEmpty(data.name) ? data.name : '';
   data.email = !isEmpty(data.email) ? data.email : '';
   data.password = !isEmpty(data.password) ? data.password : '';
+  data.confirmpassword = !isEmpty(data.confirmpassword) ? data.confirmpassword : '';
   if (!Validator.isLength(data.name, {
       min: 3,
       max: 30
@@ -40,7 +42,7 @@ module.exports = getValidateRegister = (data) => {
   }
 
   if (!Validator.equals(data.password, data.confirmpassword)) {
-    errors.password2 = 'Passwords must match';
+    errors.password = 'Passwords must match';
   }
 
   return {
