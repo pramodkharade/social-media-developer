@@ -4,6 +4,7 @@ const bodyParser = require('body-parser');
 const userRoutes = require('./src/routes/usersRoute');
 const profileRoute = require('./src/routes/profilesRoute');
 const postsRoute = require('./src/routes/postsRoute');
+const authRoute = require('./src/routes/authRoute');
 const app = express();
 const PORT = process.env.PORT || 5000;
 
@@ -22,6 +23,7 @@ mongoose.connect('mongodb://localhost:27017/socialNetworkMedia', {
   console.log('Mongoose connection setup');
 });
 // Route Middleware
+app.use('/api/auth/', authRoute);
 app.use('/api/users/', userRoutes);
 app.use('/api/profile/', profileRoute);
 app.use('/api/posts/', postsRoute);

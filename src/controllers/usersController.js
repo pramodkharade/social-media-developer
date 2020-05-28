@@ -76,8 +76,10 @@ exports.getUserLogin = async(req, res, next) => {
       if (isMatch) {
         console.log('IsMatch value:', user);
         const payload = {
-          id: user._id,
-          name: user.name,
+          user: {
+            id: user._id,
+            name: user.name
+          }
         }
         jwt.sign(payload, "mynodeAPISecret", {
           expiresIn: 3600
@@ -87,7 +89,7 @@ exports.getUserLogin = async(req, res, next) => {
           }
           return res.json({
             success: true,
-            token: 'Bearer ' + token
+            token: token
           })
         });
       } else {
