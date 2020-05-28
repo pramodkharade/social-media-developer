@@ -11,4 +11,9 @@ router.get('/test', usersController.getUsers);
 // @access  Public
 router.post('/register', usersController.setUserRegister);
 
+// @route   POST api/users/login
+// @desc    login users route
+// @access  Public
+router.post('/login', usersController.getUserLogin);
+
 module.exports = router;

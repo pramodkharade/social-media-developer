@@ -1,10 +1,11 @@
 const mongoose = require('mongoose');
 const validator = require('validator');
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 const gravatar = require('gravatar')
 const User = require('../models/usersModel');
-const bcrypt = require('bcryptjs');
 const getValidateRegister = require('../utils/validations/register');
-
+const getValidateLogin = require('../utils/validations/login');
 
 exports.getUsers = (req, res, next) => {
   res.send('Get Users');
@@ -16,7 +17,7 @@ exports.setUserRegister = async (req, res, next) => {
     const {errors, isValid} = getValidateRegister(req.body);
     // Check Validation
     console.log('isValid:  ', isValid);
-    if (isValid) {
+    if ((!isValid) && (typeof errors === 'object' && Object.keys(errors).length > 0)) {
       return res.status(400).json(errors);
     }
     console.log('Email exist before:');
@@ -56,4 +57,46 @@ exports.setUserRegister = async (req, res, next) => {
     return res.json(error.message);
   }
 }
+// Login check and return token
+exports.getUserLogin = async(req, res, next) => {
+  try {
+    const {errors, isValid} = getValidateLogin(req.body);
+    // Check Validation
+    if ((!isValid) && (typeof errors === 'object' && Object.keys(errors).length > 0)) {
+      return res.status(400).json(errors);
+    }
+    const user = await User.findOne({
+      email: req.body.email
+    });
+    if (!user) {
+      return res.status(404).json('User not found');
+    } else {
+      // check paaword match
+      const isMatch = await bcrypt.compare(req.body.password, user.password);
+      if (isMatch) {
+        console.log('IsMatch value:', user);
+        const payload = {
+          id: user._id,
+          name: user.name,
+        }
+        jwt.sign(payload, "mynodeAPISecret", {
+          expiresIn: 3600
+        }, (error, token) => {
+          if (error) {
+            throw error
+          }
+          return res.json({
+            success: true,
+            token: 'Bearer ' + token
+          })
+        });
+      } else {
+        errors.password = " invalid credential";
+        return res.status(400).json(errors);
+      }
+    }
 
+  } catch (error) {
+    return res.json(error.message);
+  }
+}
