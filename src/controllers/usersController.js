@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const validator = require('validator');
 const gravatar = require('gravatar')
 const User = require('../models/usersModel');
+const bcrypt = require('bcryptjs');
 const getValidateRegister = require('../utils/validations/register');
 
 
@@ -40,8 +41,16 @@ exports.setUserRegister = async (req, res, next) => {
         avatar
       });
       console.log('New Object:', newUser);
-      const newUserObj = await newUser.save();
-      return res.status(201).json(newUserObj);
+      bcrypt.genSalt(10, (error, salt) => {
+        bcrypt.hash(newUser.password, salt, async(error, newhash) => {
+          if (error) {
+            throw error;
+          }
+          newUser.password = newhash;
+          const newUserObj = await newUser.save();
+          return res.status(201).json(newUserObj);
+        });
+      });
     }
   } catch (error) {
     return res.json(error.message);
